@@ -3,3 +3,4 @@ loot12.txt
 *.txt
 database/database.db
 *.pyc
+sql_script.py
