@@ -17,12 +17,14 @@ from tools import *
 import config
 from key import *
 from discord.ext import commands
+from discord_slash import SlashCommand, SlashContext
+
 
 
 intents = discord.Intents.all()
 intents.members = True
-bot = commands.Bot(command_prefix = '-', intents=intents)  # add the intents= part to your existing constructor call
-client = discord.Client(intents=intents)
+bot = commands.Bot(command_prefix = '/', intents=intents)  # add the intents= part to your existing constructor call
+#client = discord.Client(intents=intents)
 
 RUN_TIME = datetime.datetime.now()
 LAST_MODIFIED = RUN_TIME.strftime("%m/%d/%Y %I:%M %p")
@@ -75,7 +77,7 @@ def get_sibling_role(member):
     return ret
 @client.event
 async def on_ready():
-    await client.change_presence(activity = discord.Game(name = "-help for commands)"))
+    await client.change_presence(activity = discord.Game(name = "/cmds for commands)"))
     #guild = bot.guilds[0]
     print("We have logged in as {0.user}".format(client))
     #print (guild.members[1])
@@ -104,24 +106,24 @@ async def on_message(message):
         return -1;        
 
             
-    if message.content.startswith("-say"):
+    if message.content.startswith("/say"):
       if (message.author.id !=670325339263860758):
         if re.search(r"\b(retard|ass|fuck|shit|ass|hell|pussy?|fucker|dick|nigger|bitch|bitch|nig|damn|prick|nigga)s?\b", str(message.content).lower()): # No Bad Language/Cussing
             await message.channel.send("I do not speak bad language sir",delete_after=10)
             await message.delete(delay=1)
         else:
-          await message.channel.send(message.content.replace ("-say","")+ "\n> ||sent by "+message.author.mention+'||')
+          await message.channel.send(message.content.replace ("/say","")+ "\n> ||sent by "+message.author.mention+'||')
           await message.delete(delay=1)
           
-    if (message.content.startswith("-say")) and (message.author.id == (670325339263860758)): #this removes the tag if Baraa is the one who speaks
-      await message.channel.send(message.content.replace ("-say",""))
+    if (message.content.startswith("/say")) and (message.author.id == (670325339263860758)): #this removes the tag if Baraa is the one who speaks
+      await message.channel.send(message.content.replace ("/say",""))
       await message.delete(delay=1)
     if message.content.lower().startswith('/version'):
         if message.author.id == 670325339263860758 or 233691753922691072 : #if baraa or jake
         #if message.author.id in DEVS:
             await message.channel.send(f"`{RELEASE} | {LAST_MODIFIED}`")
         
-    if (message.content.startswith("-help")): #this removes the tag if Baraa is the one who speaks
+    if (message.content.startswith("/cmds")): #this removes the tag if Baraa is the one who speaks
       #await message.channel.send(("hello world"))
         #embed = discord.Embed(title="Title", description="Desc", color=0x00ff00)
         embed = discord.Embed(title = "",desctiption = "this is desctiption",color=0x461111)
@@ -130,8 +132,8 @@ async def on_message(message):
         #embed.set_thumbnail(url="https://cdn.discordapp.com/attachments/803103105406992415/829141943417962516/Circle_msa_Logo.png")
         embed.add_field(name="/verify",value='verifies users',inline=False)
         embed.add_field(name="/add",value='addes users </add><@username>',inline=False)
-        embed.add_field(name="-suggest",value="let's see if agree with your suggestion on #feedback",inline=False)
-        embed.add_field(name="-say ",value='the power of the bot repeating what you want',inline=False)
+        embed.add_field(name="/suggest",value="let's see if agree with your suggestion on #feedback",inline=False)
+        embed.add_field(name="/say ",value='the power of the bot repeating what you want',inline=False)
         embed.add_field(name="say my name",value='it says your name',inline=False)
         embed.add_field(name="as",value='Assalamualaikum Warahmatullahi Wabarakatuh',inline=False)
         embed.add_field(name="ws",value='waalaikumsalam warahmatullahi wabarakatuh',inline=False)
@@ -144,7 +146,7 @@ async def on_message(message):
     if "say my name" == message.content.lower():
           await message.channel.send((message.author.mention))
           
-    if message.content.startswith("-suggest"):
+    if message.content.startswith("/suggest"):
         if message.channel.id == 785554461367468073:#suggestion channel
           thumbsUp = '\N{THUMBS UP SIGN}' #thumbs up emoji
           thumbsDown = "\U0001F44E" #thumbs down emoji
@@ -164,13 +166,13 @@ async def on_message(message):
     #if message.content.startswith('hi'):
      #   await message.channel.send("hello")
 
-    if "-baraa" in message.content.lower(): # baraa
+    if "/baraa" in message.content.lower(): # baraa
         if message.author.id == 670325339263860758:
           await message.channel.send("very well inshAllah")
 
     
     # General CaliBot Commands
-    '''if message.content.startswith('-help'): # Help command
+    '''if message.content.startswith('/help'): # Help command
         with open("cmds.md") as f:
             cmds = f.read()
         await message.channel.send("__**MontclairMSA Commands:**__```CSS\n" + cmds + "```")'''
