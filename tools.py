@@ -6,7 +6,9 @@ from email.message import EmailMessage
 from Crypto.PublicKey import RSA
 from Crypto.Cipher import PKCS1_OAEP
 from config import *
+
 #from key import *
+# make sure install the libraries pip3 install -r requitments.txt
 
 #from key import db_pass, email_pass
 
@@ -76,23 +78,6 @@ def decrypt(cipher_text):
     decrypted_text = cipher.decrypt(cipher_text)
     return decrypted_text.decode()
 
-'''def get_name(addr: str) -> str: # Return full name string based on email
-    try:
-        mydb = mysql.connector.connect(
-            host="localhost",
-            user="root",
-            password=login,
-            database="contacts")
-        mycursor = mydb.cursor()
-        ucid = re.sub(r"@motnclair.edu", '', addr)
-        sql = f"SELECT full_name FROM links WHERE ucid='{ucid}'"
-        mycursor.execute(sql)
-        result = mycursor.fetchall()
-        if len(result) != 0:
-            return str(result[0][0])
-    except mysql.connector.Error as err:
-        print(f"Error: Could not connect:\n\tDetails: {err}")'''
-
 def get_name(addr: str) -> str:
     sid = re.sub(r"@.+\.", '', str(addr))
     sid = sid.replace("edu", '')
@@ -114,6 +99,18 @@ def check_admin(msg):
     return False
 
 
+def get_sibling_role(member):
+    if member is None:
+        return None
+    #roles = member.roles; ret = None #<==there is an issue on this
+    roles, ret = member.roles, None
+
+    for role in roles:
+        if role.name == "Brothers Waiting Room":
+            ret = ("Brother", role); break
+        elif role.name == "Sisters Waiting Room":
+            ret = ("Sister", role); break
+    return ret
 
 def get_sibling(sibling):
     if sibling == "Brother":
@@ -121,6 +118,7 @@ def get_sibling(sibling):
     else:
         return sisters
 
+#checks if you say @everyone on either brothers or sisters announcement, retuns true if detects it
 def listen_announce(msg):
     if msg.channel.id == brothers.announce:
         if "@everyone" in msg.content:
