@@ -5,11 +5,10 @@ Application Name: Montclair MSA bot
 Functionality Purpose: a bot that verifies poeple on discord and does smaller command tasks
 Version: 
 '''
-RELEASE = "v0.2.0 - 4/17/2021 (DEV)"
+RELEASE = "v0.2.3 - 4/20/2021 (DEV)"
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 import discord
 import asyncio
-#from webserver import keep_alive
 from email.message import EmailMessage
 import re, os, sys, time, json, smtplib, datetime
 from config import *
@@ -17,17 +16,16 @@ from tools import *
 import config
 from key import *
 from discord.ext import commands
-
+#from discord_slash import SlashCommand, SlashContext
 
 intents = discord.Intents.all()
 intents.members = True
-bot = commands.Bot(command_prefix = '-', intents=intents)  # add the intents= part to your existing constructor call
+bot = commands.Bot(command_prefix = '/', intents=intents)  # add the intents= part to your existing constructor call
 client = discord.Client(intents=intents)
 
 RUN_TIME = datetime.datetime.now()
 LAST_MODIFIED = RUN_TIME.strftime("%m/%d/%Y %I:%M %p")
 
-#RELEASE += f" ({ENV})"
 
 '''
 from discord.ext import commands
@@ -38,9 +36,6 @@ async def ping(ctx):
 '''
 
 #Organize code
-#Have `/verify` prompt to specify college
-
-#Prevent email from spam
 
 
 class Unbuffered(object):
@@ -56,73 +51,121 @@ class Unbuffered(object):
         return getattr(self .stream, attr)
 sys.stdout = Unbuffered(sys.stdout)
 
-client = discord.Client()
-
-
-
-def get_sibling_role(member):
-    if member is None:
-        return None
-
-    #roles = member.roles; ret = None #<==there is an issue on this
-    roles, ret = member.roles, None
-
-    for role in roles:
-        if role.name == "Brothers Waiting Room":
-            ret = ("Brother", role); break
-        elif role.name == "Sisters Waiting Room":
-            ret = ("Sister", role); break
-    return ret
 @client.event
 async def on_ready():
-    await client.change_presence(activity = discord.Game(name = "-help for commands)"))
-    #guild = bot.guilds[0]
+    await client.change_presence(activity = discord.Game(name = "/cmds for commands)"))
+    #guild = client.get_guild(SERVER_ID)
+    #print (guild.members[1]) for none member debuging 
     print("We have logged in as {0.user}".format(client))
-    #print (guild.members[1])
     refresh = []
 
-
-def get_sibling_role(member):
-    if member is None:
-        return None
-
-    #roles = member.roles; ret = None #<==there is an issue on this
-    roles, ret = member.roles, None
-
-    for role in roles:
-        if role.name == "Brothers Waiting Room":
-            ret = ("Brother", role); break
-        elif role.name == "Sisters Waiting Room":
-            ret = ("Sister", role); break
-    return ret
+#reaction roles adds a role once you click the emoji
 
 @client.event
+async def on_raw_reaction_add(playload):
+    message_id = playload.message_id
+    if message_id == 834201348030988328:
+        guild_id = playload.guild_id
+        guild = discord.utils.find(lambda g : g.id == guild_id, client.guilds)
+
+        if playload.emoji.name == "quran":
+            #print ("thumbs up")
+            role = discord.utils.get(guild.roles, name = 'Quran Circle')
+            if role is not None:
+                member = discord.utils.find(lambda m : m.id == playload.user_id, guild.members)
+                if member is not None:
+                    await member.add_roles(role)
+                else:
+                    print ("member not found")
+            else: 
+                print ("role not found")
+        if playload.emoji.name == "halaqa":
+            role = discord.utils.get(guild.roles, name = "Brothers' Halaqa")
+            if role is not None:
+                member = discord.utils.find(lambda m : m.id == playload.user_id, guild.members)
+                if member is not None:
+                    await member.add_roles(role)
+
+#when removing the emoji, it removes the role with it
+
+@client.event
+async def on_raw_reaction_remove(playload):
+    message_id = playload.message_id
+    if message_id == 834201348030988328: #brother reaction-role channel
+        guild_id = playload.guild_id
+        guild = discord.utils.find(lambda g : g.id == guild_id, client.guilds)
+
+        if playload.emoji.name == "quran":
+            role = discord.utils.get(guild.roles, name = 'Quran Circle')
+            if role is not None:
+                member = discord.utils.find(lambda m : m.id == playload.user_id, guild.members)
+                if member is not None:
+                    await member.remove_roles(role)
+                else:
+                    print ("member not found")
+            else: 
+                print ("role not found")
+        if playload.emoji.name == "halaqa":
+            role = discord.utils.get(guild.roles, name = "Brothers' Halaqa")
+            if role is not None:
+                member = discord.utils.find(lambda m : m.id == playload.user_id, guild.members)
+                if member is not None:
+                    await member.remove_roles(role) 
+
+#on messeges commands 
+@client.event
 async def on_message(message):
-  #baraa = message.author.id (670325339263860758):
-
     if message.author == client.user:
-        return -1;        
+        return -1;    
 
-            
-    if message.content.startswith("-say"):
-      if (message.author.id !=670325339263860758):
+#/add gives a role depending where the user is. 
+    if message.content.startswith('/add'): 
+        
+        if check_admin(message):
+            user_id = re.search("\d{5,}", message.content)
+            print ("user_id is:", user_id)
+            #print(user_id)                
+            if user_id:
+                guild = client.get_guild(SERVER_ID)
+                member = guild.get_member(int(user_id.group())) #they changed the .get_member
+                #print ("member is", member) # to just check if it will return non or not; debuging
+                sibling,rm_role = get_sibling_role(member)              
+                role = discord.utils.get(client.get_guild(SERVER_ID).roles, name= f"{sibling}")
+                brother = discord.utils.get(client.get_guild(SERVER_ID).roles, name= "Brother Waiting Room")
+                print ( "role is", role)
+
+                await member.add_roles(role)
+                await member.remove_roles(rm_role)
+                siblinghood = get_sibling(sibling)
+                channel = client.get_channel(siblinghood.general)
+                await channel.send("<@!" + user_id.group() + "> *has* ***officially*** *joined the Montclair MSA Discord! Welcome your " + sibling + "!*")
+            else:
+                await message.channel.send("**Invalid command! Please make sure you're @ing the user.**", delete_after=25)
+                await message.delete(delay=300)
+
+#/say lets the bot repeats what you say 
+    if message.content.startswith("/say"): 
+      if (message.author.id !=670325339263860758): #if not Baraa
+      #to prevent anyone from repearting any bad language
         if re.search(r"\b(retard|ass|fuck|shit|ass|hell|pussy?|fucker|dick|nigger|bitch|bitch|nig|damn|prick|nigga)s?\b", str(message.content).lower()): # No Bad Language/Cussing
             await message.channel.send("I do not speak bad language sir",delete_after=10)
             await message.delete(delay=1)
         else:
-          await message.channel.send(message.content.replace ("-say","")+ "\n> ||sent by "+message.author.mention+'||')
-          await message.delete(delay=1)
-          
-    if (message.content.startswith("-say")) and (message.author.id == (670325339263860758)): #this removes the tag if Baraa is the one who speaks
-      await message.channel.send(message.content.replace ("-say",""))
+          await message.channel.send(message.content.replace ("/say","")+ "\n> ||sent by "+message.author.mention+'||')
+          await message.delete(delay=1)   
+    if (message.content.startswith("/say")) and (message.author.id == (670325339263860758)): #this removes the tag if Baraa is the one who speaks
+      await message.channel.send(message.content.replace ("/say",""))
       await message.delete(delay=1)
+
+#/version shows the current version number with the date of the bot whether on the cloud or local
     if message.content.lower().startswith('/version'):
         if message.author.id == 670325339263860758 or 233691753922691072 : #if baraa or jake
         #if message.author.id in DEVS:
             await message.channel.send(f"`{RELEASE} | {LAST_MODIFIED}`")
-        
-    if (message.content.startswith("-help")): #this removes the tag if Baraa is the one who speaks
-      #await message.channel.send(("hello world"))
+
+#/cmds or help command to present all accessible commands       
+    if (message.content.startswith("/cmds")): 
+        #await message.channel.send(("hello world"))
         #embed = discord.Embed(title="Title", description="Desc", color=0x00ff00)
         embed = discord.Embed(title = "",desctiption = "this is desctiption",color=0x461111)
         #embed.set_footer(text="this is a footer")
@@ -130,59 +173,53 @@ async def on_message(message):
         #embed.set_thumbnail(url="https://cdn.discordapp.com/attachments/803103105406992415/829141943417962516/Circle_msa_Logo.png")
         embed.add_field(name="/verify",value='verifies users',inline=False)
         embed.add_field(name="/add",value='addes users </add><@username>',inline=False)
-        embed.add_field(name="-suggest",value="let's see if agree with your suggestion on #feedback",inline=False)
-        embed.add_field(name="-say ",value='the power of the bot repeating what you want',inline=False)
+        embed.add_field(name="/suggest",value="let's see if agree with your suggestion on #feedback",inline=False)
+        embed.add_field(name="/say ",value='the power of the bot repeating what you want',inline=False)
         embed.add_field(name="say my name",value='it says your name',inline=False)
         embed.add_field(name="as",value='Assalamualaikum Warahmatullahi Wabarakatuh',inline=False)
         embed.add_field(name="ws",value='waalaikumsalam warahmatullahi wabarakatuh',inline=False)
-
-
         await message.channel.send(embed=embed)
 
-
-    #if message.content.lower().startswith("say my name"):
+#say my name tags your user name
     if "say my name" == message.content.lower():
           await message.channel.send((message.author.mention))
-          
-    if message.content.startswith("-suggest"):
+
+#/suggest lets you suggest any ideas and makes an emoji poll
+    if message.content.startswith("/suggest"):
         if message.channel.id == 785554461367468073:#suggestion channel
           thumbsUp = '\N{THUMBS UP SIGN}' #thumbs up emoji
           thumbsDown = "\U0001F44E" #thumbs down emoji
-
           await message.add_reaction(thumbsUp)
           await message.add_reaction(thumbsDown)
 
-    if re.search(r"\b(retard|ass|fuck|shit|ass|pussy?|fucker|dick|nigger|bitch|bitch|nig|damn|prick|nigga)s?\b", str(message.content).lower()): # No Bad Language/Cussing
+# No Bad Language/Cussing
+    if re.search(r"\b(retard|ass|fuck|shit|ass|pussy?|fucker|dick|nigger|bitch|bitch|nig|damn|prick|nigga)s?\b", str(message.content).lower()): 
             await message.channel.send("https://gyazo.com/45ad780b2d98f884f00273e3dc0db6cc", delete_after=20)
             await message.delete(delay=1)
+#greetings
     if "as" == message.content:
-        await message.channel.send("Assalamualaikum Warahmatullahi Wabarakatuh")
-        
+        await message.channel.send("Assalamualaikum Warahmatullahi Wabarakatuh")        
     if "ws" == message.content.lower():
         await message.channel.send("Walaikum Assalam Wa Rahmatullahi Wa Barakatuh")
 
-    #if message.content.startswith('hi'):
-     #   await message.channel.send("hello")
-
-    if "-baraa" in message.content.lower(): # baraa
+#special commands
+    if "/baraa" in message.content.lower(): # baraa
         if message.author.id == 670325339263860758:
           await message.channel.send("very well inshAllah")
 
-    
-    # General CaliBot Commands
-    '''if message.content.startswith('-help'): # Help command
+    # General help commands Commands
+    '''if message.content.startswith('/help'): # Help command
         with open("cmds.md") as f:
             cmds = f.read()
         await message.channel.send("__**MontclairMSA Commands:**__```CSS\n" + cmds + "```")'''
 
-    if listen_announce(message): # Send to alternate announcement channel
+#Send to alternate announcement channel
+    if listen_announce(message): 
         announce_channel = listen_announce(message)
         channel = client.get_channel(announce_channel)
-        await channel.send(message.content)
+        await channel.send(message.content) 
 
-    
-
-
+#verifies users using a sent code to their email that is randomly generated, they have to put it back to get a role
     if listen_verify(message): # Verify command
         ucid, gender = listen_verify(message)
         #error handler
@@ -248,7 +285,6 @@ async def on_message(message):
             if re.search(r"^[a-zA-Z]{2,4}\d{0,4}$", message.content):
                 await message.channel.send("**Invalid command! Read instructions above and use /verify please!**", delete_after=25)
             await message.delete(delay=300)
-    
 
     # Sisters Exclusive Commands
 
