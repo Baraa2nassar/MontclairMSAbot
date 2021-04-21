@@ -21,7 +21,8 @@ from discord.ext import commands
 intents = discord.Intents.all()
 intents.members = True
 bot = commands.Bot(command_prefix = '/', intents=intents)  # add the intents= part to your existing constructor call
-client = discord.Client(intents=intents)
+
+#client = discord.Client(intents=intents)
 
 RUN_TIME = datetime.datetime.now()
 LAST_MODIFIED = RUN_TIME.strftime("%m/%d/%Y %I:%M %p")
@@ -119,6 +120,7 @@ async def on_message(message):
     if message.author == client.user:
         return -1;    
 
+
 #/add gives a role depending where the user is. 
     if message.content.startswith('/add'): 
         
@@ -154,6 +156,7 @@ async def on_message(message):
         else:
           await message.channel.send(message.content.replace ("/say","")+ "\n> ||sent by "+message.author.mention+'||')
           await message.delete(delay=1)   
+
     if (message.content.startswith("/say")) and (message.author.id == (670325339263860758)): #this removes the tag if Baraa is the one who speaks
       await message.channel.send(message.content.replace ("/say",""))
       await message.delete(delay=1)
@@ -163,7 +166,6 @@ async def on_message(message):
         if message.author.id == 670325339263860758 or 233691753922691072 : #if baraa or jake
         #if message.author.id in DEVS:
             await message.channel.send(f"`{RELEASE} | {LAST_MODIFIED}`")
-
 #/cmds or help command to present all accessible commands       
     if (message.content.startswith("/cmds")): 
         #await message.channel.send(("hello world"))
