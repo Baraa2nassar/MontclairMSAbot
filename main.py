@@ -36,7 +36,8 @@ async def ping(ctx):
 '''
 
 #Organize code
-
+#add the schedualar 
+#maybe add instagram scaper for the posts
 
 class Unbuffered(object):
     def __init__(self, stream):
