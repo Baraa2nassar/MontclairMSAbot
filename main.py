@@ -5,7 +5,7 @@ Application Name: Montclair MSA bot
 Functionality Purpose: a bot that verifies poeple on discord and does smaller command tasks
 Version: 
 '''
-RELEASE = "v0.2.3 - 4/20/2021  (DEV)"
+RELEASE = "v0.2.5 - 8/27/2021   (DEV)"
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 import discord
@@ -68,11 +68,17 @@ def get_sibling_role(member):
 
     #roles = member.roles; ret = None #<==there is an issue on this
     roles, ret = member.roles, None
+    reaction_channel = ""
 
     for role in roles:
         if role.name == "Brothers Waiting Room":
-            ret = ("Brother", role); break
+            ret = ("Brother", role);break
         elif role.name == "Sisters Waiting Room":
+            #reaction_channel = "<#773420851387301939>" #have to fix this and put one for sisters
+            ret = ("Sister", role); break
+        elif role.name == "Brother":
+            ret = ("Brother", role);break
+        elif role.name == "Sister":
             ret = ("Sister", role); break
     return ret
 
@@ -85,57 +91,6 @@ async def on_ready():
     #print (guild.members[1])
     refresh = []
 
-
-def get_sibling_role(member):
-    if member is None:
-        return None
-
-    #roles = member.roles; ret = None #<==there is an issue on this
-    roles, ret = member.roles, None
-
-    for role in roles:
-        if role.name == "Brothers Waiting Room":
-            ret = ("Brother", role); break
-        elif role.name == "Sisters Waiting Room":
-            ret = ("Sister", role); break
-    return ret
-
-
-@client.event
-async def on_raw_reaction_add(playload):
-    message_id = playload.message_id
-    if message_id == 834201348030988328:
-        guild_id = playload.guild_id
-        guild = discord.utils.find(lambda g : g.id == guild_id, client.guilds)
-
-        if playload.emoji.name == "quran":
-            #print ("thumbs up")
-            role = discord.utils.get(guild.roles, name = 'Quran Circle')
-            if role is not None:
-                member = discord.utils.find(lambda m : m.id == playload.user_id, guild.members)
-                if member is not None:
-                    await member.add_roles(role)
-                else:
-                    print ("member not found")
-            else: 
-                print ("role not found")
-        if playload.emoji.name == "halaqa":
-            role = discord.utils.get(guild.roles, name = "Brothers' Halaqa")
-            if role is not None:
-                member = discord.utils.find(lambda m : m.id == playload.user_id, guild.members)
-                if member is not None:
-                    await member.add_roles(role)
-
-        if playload.emoji.name == "🎓":
-            role = discord.utils.get(guild.roles, name = "Alumni")
-            if role is not None:
-                member = discord.utils.find(lambda m : m.id == playload.user_id, guild.members)
-                if member is not None:
-                    await member.add_roles(role)
-                else:
-                    print ("member not found")
-            else: 
-                print ("role not found")
 
 @client.event
 async def on_raw_reaction_remove(playload):
@@ -172,11 +127,11 @@ async def on_raw_reaction_remove(playload):
 @client.event
 async def on_message(message):
   #baraa = message.author.id (670325339263860758):
-    if message.content.startswith('/add'): # Add user officially
+    if message.content.startswith('/add')or  message.content.startswith('>add'): # Add user officially
         
         if check_admin(message):
-            user_id = re.search("\d{5,}", message.content)
-            print ("user_id is:", user_id)
+            user_id = re.search(r"\d{5,}", message.content)
+            #print ("user_id is:", user_id)
             #print(user_id)
                         
             if user_id:
@@ -190,7 +145,6 @@ async def on_message(message):
                 #print (member.roles)
                 #print (client.get_guild(SERVER_ID).roles)#this prints all the roles in the server
                 #print (guild.members)
-                
                 #async for guild in client.fetch_guilds(limit=150):
     
                 member = guild.get_member(int(user_id.group())) #they changed the .get_member
@@ -205,34 +159,48 @@ async def on_message(message):
                 role = discord.utils.get(client.get_guild(SERVER_ID).roles, name= f"{sibling}")
                 brother = discord.utils.get(client.get_guild(SERVER_ID).roles, name= "Brother Waiting Room")
                                             
-                print ( "role is", role)
+                #print ( "role is", role)
    
                 await member.add_roles(role)#an issue add_roles is empty, why??
                 
                 await member.remove_roles(rm_role)
                 siblinghood = get_sibling(sibling)
                 channel = client.get_channel(siblinghood.general)
-                await channel.send("<@!" + user_id.group() + "> *has* ***officially*** *joined the Montclair MSA Discord! Welcome your " + sibling + "!*")
+ 
+                #await channel.send("<@!" + user_id.group() + "> *has* ***officially*** *joined the Montclair MSA Discord! Welcome your " + sibling + "!*")
             else:
                 await message.channel.send("**Invalid command! Please make sure you're @ing the user.**", delete_after=25)
                 await message.delete(delay=300)
+        else: 
+                await message.channel.send("**YOU ARE NOT ADMIN WHAT ARE YOU DOING!!!!**")
 
     if message.author == client.user:
         return -1;        
 
             
     if message.content.startswith("/say"):
+        
+      mentions = message.role_mentions
       if (message.author.id !=670325339263860758):
         if re.search(r"\b(retard|ass|fuck|shit|ass|hell|pussy?|fucker|dick|nigger|bitch|bitch|nig|damn|prick|nigga)s?\b", str(message.content).lower()): # No Bad Language/Cussing
-            await message.channel.send("I do not speak bad language sir",delete_after=10)
             await message.delete(delay=1)
+            return await message.channel.send("I do not speak bad language :angry:",delete_after=10)
+
         else:
-          await message.channel.send(message.content.replace ("/say","")+ "\n> ||sent by "+message.author.mention+'||')
-          await message.delete(delay=1)
+            #if (message.raw_mentions ):
+            if re.search(r"\b(@|everyone|here)s?\b", str(message.content).lower()): # No Bad Language/Cussing
+                await message.channel.send("heyo ... I can't @ everyone :octagonal_sign:")
+                #print("You can't mention everyone")
+            else:
+              await message.channel.send(message.content.replace ("/say","")+ "\n> ||sent by "+message.author.mention+'||')
+              await message.delete(delay=1)
           
+ #-------------------------------------------         
     if (message.content.startswith("/say")) and (message.author.id == (670325339263860758)): #this removes the tag if Baraa is the one who speaks
       await message.channel.send(message.content.replace ("/say",""))
       await message.delete(delay=1)
+
+
     if message.content.lower().startswith('/version'):
         if message.author.id == 670325339263860758 or 233691753922691072 : #if baraa or jake
         #if message.author.id in DEVS:
@@ -264,9 +232,6 @@ async def on_message(message):
                 "https://cdn.discordapp.com/attachments/814602442910072842/838359760037216296/240_F_218846526_SqlIXtk20dEnVcuXvVTGpzUeE3rmLkAe.png")
           await ctx.send(embed=embed)
 
-
-
-
         embed.add_field(name="/verify",value='verifies users',inline=False)
         embed.add_field(name="/add",value='addes users </add><@username>',inline=False)
         embed.add_field(name="/suggest",value="let's see if agree with your suggestion on #feedback",inline=False)
@@ -290,6 +255,18 @@ async def on_message(message):
 
           await message.add_reaction(thumbsUp)
           await message.add_reaction(thumbsDown)
+
+          #if message.content.lower().startswith("say my name"):
+          if "say my name" == message.content.lower():
+                await message.channel.send((message.author.mention))
+                
+          if message.content.startswith("/suggest"):
+              #if message.channel.id == 785554461367468073:#suggestion channel
+            thumbsUp = '\N{THUMBS UP SIGN}' #thumbs up emoji
+            thumbsDown = "\U0001F44E" #thumbs down emoji
+
+            await message.add_reaction(thumbsUp)
+            await message.add_reaction(thumbsDown)
 
     if re.search(r"\b(retard|ass|fuck|shit|ass|pussy?|fucker|dick|nigger|bitch|bitch|nig|damn|prick|nigga)s?\b", str(message.content).lower()): # No Bad Language/Cussing
             await message.channel.send("https://gyazo.com/45ad780b2d98f884f00273e3dc0db6cc", delete_after=20)
@@ -315,9 +292,30 @@ async def on_message(message):
         await message.channel.send("__**MontclairMSA Commands:**__```CSS\n" + cmds + "```")'''
 
     if listen_announce(message): # Send to alternate announcement channel
+        
         announce_channel = listen_announce(message)
         channel = client.get_channel(announce_channel)
-        await channel.send(message.content)
+        await channel.send(
+    message.content, files=[await f.to_file() for f in message.attachments])
+
+        #await channel.send(message.content)
+
+    '''
+        try:
+          ext = re.search(r".(png|jpg|jpeg|mp4)$", message.attachments[0].url)
+        except IndexError:
+          ext = None
+        
+        if len(message.attachments) == 1 and ext:
+            file_name = "imgs/reattach" + str(ext.group())
+            with open(file_name, "wb") as f:
+                await message.attachments[0].save(f)
+            img = File(file_name)
+            await channel.send(message.content, file=img)
+            os.remove(file_name)
+        else:
+            await channel.send(message.content)
+'''
 
     
 
@@ -376,7 +374,15 @@ async def on_message(message):
                                 print("Success!\n", nName)
                                 
                             channel = client.get_channel(sibling.wait) # montclair MSA #general
-                            await channel.send(f"@here ***" + message.author.mention + "***" + " *has joined the montclair MSA Discord!*")
+                            #print (channel)
+                            if str(channel) == "brothers-waiting-room":
+                                await channel.send(f"***" + message.author.mention + "***" + " *please wait until <@&769794574071496715> adds you*")
+
+                                #await channel.send(f"<@&769794574071496715> ***" + message.author.mention + "***" + " *has joined the montclair MSA Discord!*")
+                            elif str(channel) == "sisters-waiting-room":
+                                await channel.send(f"***" + message.author.mention + "***" + " *please wait until <@&886438020616708116> adds you*")
+                                #await channel.send(f"<@&769795211869028352> ***" + message.author.mention + "***" + " *has joined the montclair MSA Discord!*")
+
                         else:
                             await message.delete(delay=60)
                     if flag:

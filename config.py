@@ -1,6 +1,7 @@
 import os,re
-#from key import *
-#print (os.getcwd())
+from key import *
+
+print (os.getcwd())
 #print (os.listdir())
 class Server(object):
    #__slots__ = ("name", "wait", "general")
@@ -41,16 +42,9 @@ VERIFY_ID = 761359239004160020
 DB_PATH = "database/database.db"
 #DB_SECRET = "PRIVATE_key"
 
-with open("private.txt") as f:
-   privatekey = f.read()
-
-with open ("public.txt") as f:
-   publickey = f.read()
-   
-
 SP = os.getenv("SECRET_PASS", "ANY")
-DB_SECRET = re.sub(r"\\n", '\n', os.getenv("DB_SECRET", privatekey))
-ENCRYPT_KEY = re.sub(r"\\n", '\n', os.getenv("PUBLIC_KEY", publickey))
+DB_SECRET = re.sub(r"\\n", '\n', os.getenv("DB_SECRET", db_pass()))
+ENCRYPT_KEY = re.sub(r"\\n", '\n', os.getenv("PUBLIC_KEY", db_pass()))
 
 '''
 with open("cmds.md") as f:

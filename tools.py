@@ -6,6 +6,8 @@ from email.message import EmailMessage
 from Crypto.PublicKey import RSA
 from Crypto.Cipher import PKCS1_OAEP
 from config import *
+#from key import *
+
 
 #from key import *
 # make sure install the libraries pip3 install -r requitments.txt
@@ -50,7 +52,7 @@ def send_email(addr: str, test=False) -> str:
     <i><u>#verify</u></i> text channel of your montclair  MSA Discord. \
     This code will expire in 15 minutes.</body></html>", subtype="html")
         msg["Subject"] = "Verification Code for montclair MSA Discord"
-        msg["From"] = "Montclair MSA Discord"#noreply.njitmsa.discord@gmail.com
+        msg["From"] = "Montclair MSA"#noreply.njitmsa.discord@gmail.com
         msg["To"] = addr
         with smtplib.SMTP_SSL("smtp.gmail.com", 465) as s:
                 s.login("montclairmsaofficialdiscord@gmail.com", APP_PASS)
@@ -87,6 +89,7 @@ def get_name(addr: str) -> str:
     if result != None:
         full_name = result["full_name"]
         return decrypt(full_name)
+        
 print (get_name("nassarb1@montclair.edu"))
 
 # Return gender based on user
@@ -94,7 +97,7 @@ print (get_name("nassarb1@montclair.edu"))
 def check_admin(msg):
     roles = msg.author.roles
     for role in roles:
-        if role.name == "Eboard Sister" or role.name == "Eboard Brother" or role.name == "development": 
+        if role.name == "Eboard Sister" or role.name == "Eboard Brother" or role.name == "development" or role.name == "Admin": 
             return True
     return False
 

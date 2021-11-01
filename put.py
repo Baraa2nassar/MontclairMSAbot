@@ -1,3 +1,6 @@
+#this file is used to update database that has been scrabed using gc_screpe
+#use also sql_script.py
+
 import re, time, sqlite3, hashlib
 from tools import encrypt
 
@@ -53,6 +56,7 @@ def populate_links(conn, data_file):
             print("somethingElse")
             continue           
          c += 1
+         
          if str(c)[0] != thous:
              thous = str(c)[0]
          print("Number of appended records:", c)
