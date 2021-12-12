@@ -5,7 +5,7 @@ Application Name: Montclair MSA bot
 Functionality Purpose: a bot that verifies poeple on discord and does smaller command tasks
 Version: 
 '''
-RELEASE = "v0.2.5 - 8/27/2021   (DEV)"
+RELEASE = "v0.2.7 - 12/07/2021    (DEV)"
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 import discord
@@ -91,6 +91,9 @@ async def on_ready():
     #print (guild.members[1])
     refresh = []
 
+# @client.event
+# async def on_member_leave(member):
+#     print("member has left a server.")
 
 @client.event
 async def on_raw_reaction_remove(playload):
@@ -167,7 +170,7 @@ async def on_message(message):
                 siblinghood = get_sibling(sibling)
                 channel = client.get_channel(siblinghood.general)
  
-                #await channel.send("<@!" + user_id.group() + "> *has* ***officially*** *joined the Montclair MSA Discord! Welcome your " + sibling + "!*")
+                await channel.send("<@!" + user_id.group() + "> *has* ***officially*** *joined the Montclair MSA Discord! Welcome your " + sibling + "!*")
             else:
                 await message.channel.send("**Invalid command! Please make sure you're @ing the user.**", delete_after=25)
                 await message.delete(delay=300)
@@ -281,15 +284,78 @@ async def on_message(message):
      #   await message.channel.send("hello")
 
     if "/baraa" in message.content.lower(): # baraa
-        if message.author.id == 670325339263860758:
+        if message.author.id == 670325339263860758: #baraa id
           await message.channel.send("very well inshAllah")
 
+    if re.search(r"\b(Lifting|gym|muscle|strong|lift)s?\b", str(message.content).lower()): 
+        if message.author.id == 692522836920893453: #Hamza
+          lst = ["https://c.tenor.com/SHfIrV3Ozc0AAAAM/spongebob-squarepants-squidward.gif",
+                   "https://c.tenor.com/mg8CiQqEQxcAAAAM/squidward-handsome.gif",
+                   "https://c.tenor.com/dDngXdxQyh8AAAAC/tai-lung-kung-fu-panda.gif"]
+          r_i = randint(0,len(lst)+1)
+          await message.channel.send(str(lst[r_i]), delete_after=30)
+
+
+    if re.search(r"\b(sleepy|good night|moon|asleep|tired|night|late)s?\b", str(message.content).lower()): 
+        if message.author.id == 884499166607335465: #Alaa
+          lst = ["let the people sleep in peace Alaa",
+                   "https://media0.giphy.com/media/SzNvICICwZrRdNOM1q/200w.gif",
+                   "https://media.discordapp.net/attachments/751241894805110817/917639527030480906/download.png?width=266&height=266",
+                   "https://c.tenor.com/grWYw-2edNMAAAAC/disney-sleepy.gif","https://c.tenor.com/Ftfa-ehSIs4AAAAM/miyako-hoshino-wataten.gif",
+                   "https://media.discordapp.net/attachments/751241894805110817/917640709689970728/680.png?width=400&height=300"]
+          r_i = randint(0,len(lst)+1)
+          await message.channel.send(str(lst[r_i]))
+          #await message.channel.send("Alaa, let the people sleep in peace")
+
+    if "done" in message.content.lower(): 
+        if message.author.id == 815657491948896297: #Noura
+          lst = ["https://c.tenor.com/93OUVuCIk6MAAAAC/done-and-done-spongebob.gif",
+                 "https://c.tenor.com/suJJHArPXSgAAAAC/naruto-anime.gif",
+                 "https://i.imgur.com/aojrg03.gif","No, Noura u are done.💢", "Noura your teammates are here for you not against you",
+                 "yes you're done💯.","https://thumbs.gfycat.com/AjarGlamorousArrowana-size_restricted.gif",
+                 "https://c.tenor.com/DTjGghU34AsAAAAM/cats-angry.gif","https://c.tenor.com/EtSlxvVMqFgAAAAM/cat-annoyed.gif",
+                 "https://c.tenor.com/M82nGQQZZXMAAAAd/cat-cats.gif"]
+          r_i = randint(0,len(lst)+1)
+          await message.channel.send(str(lst[r_i]))
+
+    if re.search(r"\b(marriage|wife|Married|couple|love|wedding|late)s?\b", str(message.content).lower()):
+        if message.author.id == 571083432315191299: #Ali
+          lst = ["The code forbids it",
+          "https://cdn.discordapp.com/attachments/687405522131091479/814673940080361553/image0.jpg","#find_Ali_a_wife",
+          "that's rough buddy",
+          "https://im.vsco.co/aws-us-west-2/d13bb8/184238871/5f70b60a797bbf602238f27f/vsco5f70b60b8165e.jpg?w=480"]
+          r_i = randint(0,len(lst)+1)
+          await message.channel.send(str(lst[r_i]))
+
+    if "/someone" in message.content.lower():
+          if message.author.id == 670325339263860758: #baraa id
+            await message.channel.send("https://thumbs.gfycat.com/LavishBoldIvorygull-size_restricted.gif")
+
+    if "listen" in message.content.lower(): 
+        if message.author.id == 761666659428728832: #Maysa
+          lst = ["I am always here listening",
+                 "ALL BE QUITE THE PRINCESS IS TALKING",
+                 "https://static.wikia.nocookie.net/disney/images/f/f6/Frozen-disneyscreencaps.com-826.jpg/revision/latest?cb=20140311122855",
+                 "MAYSA HAS SPOKEN.", "MashAllah"]
+          r_i = randint(0,2)
+          await message.channel.send(str(lst[r_i]))
+          
+    if "hey" in message.content.lower():
+        if message.author.id == 761666659428728832:
+          lst = ["MAYSA HAS SPOKEN", "**SILENCE** the Princess wants to give her speech"
+          ,"https://c.tenor.com/ZmOWVbtbqbUAAAAM/unacceptable-lemon-grab.gif"
+          ,"https://64.media.tumblr.com/51ebefb6aae1a5440efe8b2e7a8872e5/55c083568507830d-14/s540x810/fda12e18344e180981a0f8b1a3134e20d360aa33.gifv"
+                 ]
+          r_i = randint(0,2)
+          await message.channel.send(str(lst[r_i]))
+
+    if ("busy") in message.content.lower(): 
+        if message.author.id == 761666659428728832: #Maysa
+          await message.add_reaction("😭")
+          await message.add_reaction("❄")  
+          await message.add_reaction("👎")  
+
     
-    # General CaliBot Commands
-    '''if message.content.startswith('/help'): # Help command
-        with open("cmds.md") as f:
-            cmds = f.read()
-        await message.channel.send("__**MontclairMSA Commands:**__```CSS\n" + cmds + "```")'''
 
     if listen_announce(message): # Send to alternate announcement channel
         
@@ -380,7 +446,7 @@ async def on_message(message):
 
                                 #await channel.send(f"<@&769794574071496715> ***" + message.author.mention + "***" + " *has joined the montclair MSA Discord!*")
                             elif str(channel) == "sisters-waiting-room":
-                                await channel.send(f"***" + message.author.mention + "***" + " *please wait until <@&886438020616708116> adds you*")
+                                await channel.send(f"***" + message.author.mention + "***" + " *please wait until <@&769795211869028352> adds you*")
                                 #await channel.send(f"<@&769795211869028352> ***" + message.author.mention + "***" + " *has joined the montclair MSA Discord!*")
 
                         else:

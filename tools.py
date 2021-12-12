@@ -97,7 +97,7 @@ print (get_name("nassarb1@montclair.edu"))
 def check_admin(msg):
     roles = msg.author.roles
     for role in roles:
-        if role.name == "Eboard Sister" or role.name == "Eboard Brother" or role.name == "development" or role.name == "Admin": 
+        if role.name == "Eboard Sister" or role.name == "Eboard Brother" or role.name == "development" or role.name == "Admin" or role.name =="Mod": 
             return True
     return False
 
