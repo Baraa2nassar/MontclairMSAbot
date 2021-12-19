@@ -130,6 +130,7 @@ async def on_raw_reaction_remove(playload):
 @client.event
 async def on_message(message):
   #baraa = message.author.id (670325339263860758):
+    
     if message.content.startswith('/add')or  message.content.startswith('>add'): # Add user officially
         
         if check_admin(message):
@@ -178,11 +179,29 @@ async def on_message(message):
                 await message.channel.send("**YOU ARE NOT ADMIN WHAT ARE YOU DOING!!!!**")
 
     if message.author == client.user:
-        return -1;        
+        return -1; 
+    if message.content.startswith("/poll"):
+      # print (message.content)
+      # messageContent=message.content.replace ("/poll","")
 
-            
+      custom_emojis = re.findall(r'[^\w\s()\"#/[@;:<>{}`+=~|.!?,-]', message.content)      
+      # custom_emojis = re.findall(r'[^\w\s()\"#/[@;:<>{}`+=~|.!?,-]', message.content)
+      print (custom_emojis)
+      
+      for index, mystr in enumerate(custom_emojis):
+       x = await message.channel.send(mystr)
+       await x.add_reaction(str(mystr))
+       # print(str(mystr))
+
+      # for x in range(len(custom_emojis)):
+      #     print (custom_emojis[x])
+      #     x = await message.channel.send(custom_emojis[x])
+      #     # await x.add_reaction("😮")
+      #     await x.add_reaction(f"{custom_emojis[x]}")
+
+          
     if message.content.startswith("/say"):
-        
+      print (message.content)  
       mentions = message.role_mentions
       if (message.author.id !=670325339263860758):
         if re.search(r"\b(retard|ass|fuck|shit|ass|hell|pussy?|fucker|dick|nigger|bitch|bitch|nig|damn|prick|nigga)s?\b", str(message.content).lower()): # No Bad Language/Cussing
