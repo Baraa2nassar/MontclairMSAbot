@@ -191,20 +191,12 @@ async def on_message(message):
       for index, mystr in enumerate(custom_emojis):
        x = await message.channel.send(mystr)
        await x.add_reaction(str(mystr))
-       # print(str(mystr))
-
-      # for x in range(len(custom_emojis)):
-      #     print (custom_emojis[x])
-      #     x = await message.channel.send(custom_emojis[x])
-      #     # await x.add_reaction("😮")
-      #     await x.add_reaction(f"{custom_emojis[x]}")
-
           
     if message.content.startswith("/say"):
       print (message.content)  
       mentions = message.role_mentions
       if (message.author.id !=670325339263860758):
-        if re.search(r"\b(retard|ass|fuck|shit|ass|hell|pussy?|fucker|dick|nigger|bitch|bitch|nig|damn|prick|nigga)s?\b", str(message.content).lower()): # No Bad Language/Cussing
+        if re.search(r"\b(retard|ass|fuck|shit|ass|hell|pussy?|fucker|dick|nigger|bitch|bitch|nig|prick|nigga)s?\b", str(message.content).lower()): # No Bad Language/Cussing
             await message.delete(delay=1)
             return await message.channel.send("I do not speak bad language :angry:",delete_after=10)
 
@@ -290,7 +282,7 @@ async def on_message(message):
             await message.add_reaction(thumbsUp)
             await message.add_reaction(thumbsDown)
 
-    if re.search(r"\b(retard|ass|fuck|shit|ass|pussy?|fucker|dick|nigger|bitch|bitch|nig|damn|prick|nigga)s?\b", str(message.content).lower()): # No Bad Language/Cussing
+    if re.search(r"\b(retard|ass|fuck|shit|ass|pussy?|fucker|dick|nigger|bitch|bitch|nig|prick|nigga)s?\b", str(message.content).lower()): # No Bad Language/Cussing
             await message.channel.send("https://gyazo.com/45ad780b2d98f884f00273e3dc0db6cc", delete_after=20)
             await message.delete(delay=1)
     if "as" == message.content:
