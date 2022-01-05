@@ -180,18 +180,7 @@ async def on_message(message):
 
     if message.author == client.user:
         return -1; 
-    if message.content.startswith("/poll"):
-      # print (message.content)
-      # messageContent=message.content.replace ("/poll","")
 
-      custom_emojis = re.findall(r'[^\w\s()\"#/[@;:<>{}`+=~|.!?,-]', message.content)      
-      # custom_emojis = re.findall(r'[^\w\s()\"#/[@;:<>{}`+=~|.!?,-]', message.content)
-      print (custom_emojis)
-      
-      for index, mystr in enumerate(custom_emojis):
-       x = await message.channel.send(mystr)
-       await x.add_reaction(str(mystr))
-          
     if message.content.startswith("/say"):
       print (message.content)  
       mentions = message.role_mentions
